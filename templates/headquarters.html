@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="top-header">
+    <div class="page-title">서비스영업본부</div>
+</div>
+
+<!-- 카드 요약 -->
+<div class="summary-cards">
+    <div class="card">
+        <h4>총 건수</h4>
+        <div class="value" id="sum-count">0 건</div>
+    </div>
+    <div class="card">
+        <h4>총 매출</h4>
+        <div class="value" id="sum-revenue">0 원</div>
+    </div>
+    <div class="card">
+        <h4>총 GP</h4>
+        <div class="value" id="sum-gp">0 원</div>
+    </div>
+</div>
+
+<!-- 검색 기능 -->
+<div class="controls-bar">
+    <div class="search-box">
+        <input type="text" id="search-input" placeholder="사업명 또는 영업대표 검색..." onkeyup="searchDeals()">
+    </div>
+</div>
+
+<!-- 통합 데이터 테이블 -->
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 50px;">No</th>
+            <th>부서</th>
+            <th>사업명</th>
+            <th>수주확률</th>
+            <th>매출</th>
+            <th>GP</th>
+            <th>영업대표</th>
+            <th>수주시기</th>
+        </tr>
+    </thead>
+    <tbody id="deal-table-body">
+    </tbody>
+</table>
+
+<script src="{{ url_for('static', filename='js/team.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        initTeamPage(''); // 전체(빈값) 조회
+    });
+</script>
+{% endblock %}

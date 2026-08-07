@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="top-header">
+    <div class="page-title">{{ team_name }}</div>
+</div>
+
+<!-- 카드 요약 -->
+<div class="summary-cards">
+    <div class="card">
+        <h4>총 건수</h4>
+        <div class="value" id="sum-count">0 건</div>
+    </div>
+    <div class="card">
+        <h4>총 매출</h4>
+        <div class="value" id="sum-revenue">0 원</div>
+    </div>
+    <div class="card">
+        <h4>총 GP</h4>
+        <div class="value" id="sum-gp">0 원</div>
+    </div>
+</div>
+
+<!-- 검색 및 버튼 -->
+<div class="controls-bar">
+    <div class="search-box">
+        <input type="text" id="search-input" placeholder="사업명 또는 영업대표 검색..." onkeyup="searchDeals()">
+    </div>
+    <div class="action-btns">
+        <button class="btn btn-blue" onclick="openAddModal()">+</button>
+        <button class="btn btn-yellow" onclick="openEditModal()">수정</button>
+        <button class="btn btn-red" onclick="deleteDeal()">삭제</button>
+    </div>
+</div>
+
+<!-- 테이블 -->
+<table class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 50px;">No</th>
+            <th>사업명</th>
+            <th>수주확률</th>
+            <th>매출</th>
+            <th>GP</th>
+            <th>영업대표</th>
+            <th>수주시기</th>
+        </tr>
+    </thead>
+    <tbody id="deal-table-body">
+    </tbody>
+</table>
+
+<!-- 등록/수정 모달 -->
+<div id="deal-modal" class="modal">
+    <div class="modal-content">
+        <h3 id="modal-title">사업 등록</h3>
+        <form id="deal-form" onsubmit="event.preventDefault(); saveDeal();">
+            <input type="hidden" id="deal-id">
+            <div class="form-group">
+                <label>사업명</label>
+                <input type="text" id="deal-title" required>
+            </div>
+            <div class="form-group">
+                <label>수주확률 (%)</label>
+                <select id="deal-prob" required>
+                    <option value="0">0%</option>
+                    <option value="25">25%</option>
+                    <option value="50">50%</option>
+                    <option value="75">75%</option>
+                    <option value="100">100%</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>매출</label>
+                <input type="number" id="deal-rev" required>
+            </div>
+            <div class="form-group">
+                <label>GP</label>
+                <input type="number" id="deal-gp" required>
+            </div>
+            <div class="form-group">
+                <label>영업대표</label>
+                <input type="text" id="deal-rep" required>
+            </div>
+            <div class="form-group">
+                <label>수주시기</label>
+                <input type="month" id="deal-month" required>
+            </div>
+            <div class="form-group">
+                <label>메모</label>
+                <textarea id="deal-memo" rows="3"></textarea>
+            </div>
+            <div class="modal-btns">
+                <button type="button" class="btn" onclick="closeDealModal()">취소</button>
+                <button type="submit" class="btn btn-blue">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/team.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        initTeamPage('커머셜팀');
+    });
+</script>
+{% endblock %}

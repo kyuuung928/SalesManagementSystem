@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+                <span class="sidebar-text">Sales System</span>
+            </div>
+            <button onclick="toggleSidebar()" style="background:none; border:none; color:white; cursor:pointer;">☰</button>
+        </div>
+        <div class="user-welcome sidebar-text">
+            <strong>{{ current_user.department }}</strong><br>
+            {{ current_user.name }} {{ current_user.position }}님 환영합니다!
+        </div>
+        <ul class="nav-links">
+            <li class="{% if request.path == '/dashboard' %}active{% endif %}">
+                <a href="{{ url_for('dashboard') }}">📊 <span class="sidebar-text">Dashboard</span></a>
+            </li>
+            <li class="{% if request.path == '/commercial' %}active{% endif %}">
+                <a href="{{ url_for('commercial') }}">💼 <span class="sidebar-text">커머셜팀</span></a>
+            </li>
+            <li class="{% if request.path == '/service' %}active{% endif %}">
+                <a href="{{ url_for('service') }}">🛠️ <span class="sidebar-text">서비스영업팀</span></a>
+            </li>
+            <li class="{% if request.path == '/headquarters' %}active{% endif %}">
+                <a href="{{ url_for('headquarters') }}">🏢 <span class="sidebar-text">서비스영업본부</span></a>
+            </li>
+        </ul>
+        <div class="logout-btn">
+            <a href="{{ url_for('logout') }}">🚪 <span class="sidebar-text">로그아웃</span></a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div id="main-content" style="{% if not current_user.is_authenticated %}margin-left: 0;{% endif %}">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+    </script>
+</body>
+</html>

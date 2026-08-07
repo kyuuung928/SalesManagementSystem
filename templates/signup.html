@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="auth-container">
+    <h2>회원가입</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div style="color: #ef4444; margin-bottom: 10px; font-size: 0.9rem;">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <form method="POST">
+        <input type="text" name="name" placeholder="이름" required>
+        <select name="position" required>
+            <option value="" disabled selected>직급 선택</option>
+            <option value="사원">사원</option>
+            <option value="주임">주임</option>
+            <option value="대리">대리</option>
+            <option value="과장">과장</option>
+            <option value="부장">부장</option>
+            <option value="이사">이사</option>
+            <option value="상무">상무</option>
+            <option value="전무">전무</option>
+        </select>
+        <select name="department" required>
+            <option value="" disabled selected>부서 선택</option>
+            <option value="서비스영업팀">서비스영업팀</option>
+            <option value="커머셜팀">커머셜팀</option>
+            <option value="서비스영업본부">서비스영업본부(=관리자)</option>
+        </select>
+        <input type="text" name="username" placeholder="아이디" required>
+        <input type="password" name="password" placeholder="비밀번호" required>
+        <button type="submit">가입하기</button>
+    </form>
+    <div style="margin-top: 15px; font-size: 0.85rem;">
+        이미 계정이 있으신가요? <a href="{{ url_for('login') }}" style="color: var(--blue-accent);">로그인</a>
+    </div>
+</div>
+{% endblock %}
