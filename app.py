@@ -3,9 +3,19 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
 from models import db, User, Deal, TargetSetting
+import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# --- [추가] Render PostgreSQL 클라우드 DB 연동 설정 ---
+db_url = os.environ.get('DATABASE_URL')
+if db_url and db_url.startswith("postgres://"):
+    # SQLAlchemy 최신 버전 호환을 위해 postgres:// 를 postgresql:// 로 변경
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url or 'sqlite:///database/app.db'
+# ---------------------------------------------------
 
 db.init_app(app)
 login_manager = LoginManager(app)
