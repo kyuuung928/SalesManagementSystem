@@ -1,6 +1,22 @@
 let selectedDealId = null;
 let currentTeam = ""; 
 
+// --- [추가] 3자리 쉼표 포맷팅 유틸리티 함수 ---
+function formatNumberInput(input) {
+    let value = input.value.replace(/[^0-9]/g, '');
+    if (value) {
+        input.value = Number(value).toLocaleString('ko-KR');
+    } else {
+        input.value = '';
+    }
+}
+
+function parseFormattedNumber(value) {
+    if (!value) return 0;
+    return parseFloat(value.toString().replace(/,/g, '')) || 0;
+}
+// ----------------------------------------------
+
 function initTeamPage(teamName) {
     currentTeam = teamName;
     loadDeals();
@@ -45,12 +61,12 @@ function selectRow(tr, deal) {
     tr.classList.add('selected');
     selectedDealId = deal.id;
     
-    // 모달에 정보 세팅
+    // 모달에 정보 세팅 (숫자를 천단위 쉼표 포맷으로 변환하여 표시)
     document.getElementById('deal-id').value = deal.id;
     document.getElementById('deal-title').value = deal.title;
     document.getElementById('deal-prob').value = deal.probability;
-    document.getElementById('deal-rev').value = deal.revenue;
-    document.getElementById('deal-gp').value = deal.gp;
+    document.getElementById('deal-rev').value = Number(deal.revenue).toLocaleString('ko-KR');
+    document.getElementById('deal-gp').value = Number(deal.gp).toLocaleString('ko-KR');
     document.getElementById('deal-rep').value = deal.sales_rep;
     document.getElementById('deal-month').value = deal.closing_month;
     document.getElementById('deal-memo').value = deal.memo || '';
@@ -105,12 +121,17 @@ function closeDealModal() {
 
 function saveDeal() {
     const id = document.getElementById('deal-id').value;
+    
+    // 쉼표 제거 후 숫자값 추출
+    const revValue = parseFormattedNumber(document.getElementById('deal-rev').value);
+    const gpValue = parseFormattedNumber(document.getElementById('deal-gp').value);
+
     const payload = {
         team: currentTeam,
         title: document.getElementById('deal-title').value,
         probability: document.getElementById('deal-prob').value,
-        revenue: document.getElementById('deal-rev').value,
-        gp: document.getElementById('deal-gp').value,
+        revenue: revValue,
+        gp: gpValue,
         sales_rep: document.getElementById('deal-rep').value,
         closing_month: document.getElementById('deal-month').value,
         memo: document.getElementById('deal-memo').value

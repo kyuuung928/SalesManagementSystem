@@ -4,9 +4,23 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDashboardData();
 });
 
+// dashboard.js 상단에 추가
+function formatNumberInput(input) {
+    let value = input.value.replace(/[^0-9]/g, '');
+    if (value) {
+        input.value = Number(value).toLocaleString('ko-KR');
+    } else {
+        input.value = '';
+    }
+}
+
+function parseFormattedNumber(value) {
+    if (!value) return 0;
+    return parseFloat(value.toString().replace(/,/g, '')) || 0;
+}
+
 function createGaugeChart(canvasId, title, percentage) {
     const ctx = document.getElementById(canvasId).getContext('2d');
-    
     if (gaugeCharts[canvasId]) {
         gaugeCharts[canvasId].destroy();
     }
@@ -68,9 +82,9 @@ function loadDashboardData() {
             document.getElementById('serv-revenue').innerText = `${data.service.revenue.toLocaleString()} 원`;
             document.getElementById('serv-gp').innerText = `${data.service.gp.toLocaleString()} 원`;
 
-            // 설정 모달 초기값
-            document.getElementById('target-rev-input').value = data.target_revenue;
-            document.getElementById('target-gp-input').value = data.target_gp;
+            // 설정 모달 초기값 설정 시 천단위 쉼표 적용
+            document.getElementById('target-rev-input').value = Number(data.target_revenue).toLocaleString('ko-KR');
+            document.getElementById('target-gp-input').value = Number(data.target_gp).toLocaleString('ko-KR');
         });
 }
 
@@ -83,8 +97,9 @@ function closeSettingsModal() {
 }
 
 function saveSettings() {
-    const rev = document.getElementById('target-rev-input').value;
-    const gp = document.getElementById('target-gp-input').value;
+    // 쉼표 제거 후 숫자만 추출
+    const rev = parseFormattedNumber(document.getElementById('target-rev-input').value);
+    const gp = parseFormattedNumber(document.getElementById('target-gp-input').value);
 
     fetch('/api/target-setting', {
         method: 'POST',
