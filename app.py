@@ -111,67 +111,67 @@ def headquarters():
 
 # --- API Endpoints ---
 
-@app.route('/api/dashboard-data')
+@app.route('/api/dashboard-data', methods=['GET'])
 @login_required
 def get_dashboard_data():
     target = TargetSetting.query.first()
-    target_rev = target.target_revenue if target else 100000
-    target_gp = target.target_gp if target else 20000
+    if not target:
+        target = TargetSetting(target_revenue=0, target_gp=0, comm_target_rev=0, comm_target_gp=0, serv_target_rev=0, serv_target_gp=0)
+        db.session.add(target)
+        db.session.commit()
 
     deals = Deal.query.all()
-    
-    total_count = len(deals)
-    total_rev = sum(d.revenue for d in deals)
-    total_gp = sum(d.gp for d in deals)
-
-    # 수주확률 100% Deals
-    deals_100 = [d for d in deals if d.probability == 100]
-    total_rev_100 = sum(d.revenue for d in deals_100)
-    total_gp_100 = sum(d.gp for d in deals_100)
-
-    # 팀별 집계
     comm_deals = [d for d in deals if d.team == '커머셜팀']
     serv_deals = [d for d in deals if d.team == '서비스영업팀']
 
+    def calc_stats(deal_list, t_rev, t_gp):
+        rev = sum(d.revenue for d in deal_list)
+        gp = sum(d.gp for d in deal_list)
+        rev_pct = round((rev / t_rev * 100), 1) if t_rev > 0 else 0
+        gp_pct = round((gp / t_gp * 100), 1) if t_gp > 0 else 0
+        return {'count': len(deal_list), 'revenue': rev, 'gp': gp, 'rev_pct': rev_pct, 'gp_pct': gp_pct}
+
+    def calc_100_stats(deal_list, t_rev, t_gp):
+        d100 = [d for d in deal_list if d.probability == 100]
+        rev = sum(d.revenue for d in d100)
+        gp = sum(d.gp for d in d100)
+        rev_pct = round((rev / t_rev * 100), 1) if t_rev > 0 else 0
+        gp_pct = round((gp / t_gp * 100), 1) if t_gp > 0 else 0
+        return {'count': len(d100), 'revenue': rev, 'gp': gp, 'rev_pct': rev_pct, 'gp_pct': gp_pct}
+
     return jsonify({
-        'target_revenue': target_rev,
-        'target_gp': target_gp,
-        'total': {
-            'count': total_count,
-            'revenue': total_rev,
-            'gp': total_gp,
-            'rev_pct': round((total_rev / target_rev * 100), 1) if target_rev > 0 else 0,
-            'gp_pct': round((total_gp / target_gp * 100), 1) if target_gp > 0 else 0,
-        },
-        'total_100': {
-            'revenue': total_rev_100,
-            'gp': total_gp_100,
-            'rev_pct': round((total_rev_100 / target_rev * 100), 1) if target_rev > 0 else 0,
-            'gp_pct': round((total_gp_100 / target_gp * 100), 1) if target_gp > 0 else 0,
-        },
-        'commercial': {
-            'count': len(comm_deals),
-            'revenue': sum(d.revenue for d in comm_deals),
-            'gp': sum(d.gp for d in comm_deals)
-        },
-        'service': {
-            'count': len(serv_deals),
-            'revenue': sum(d.revenue for d in serv_deals),
-            'gp': sum(d.gp for d in serv_deals)
+        'total': calc_stats(deals, target.target_revenue, target.target_gp),
+        'total_100': calc_100_stats(deals, target.target_revenue, target.target_gp),
+        'commercial': calc_stats(comm_deals, target.comm_target_rev, target.comm_target_gp),
+        'commercial_100': calc_100_stats(comm_deals, target.comm_target_rev, target.comm_target_gp),
+        'service': calc_stats(serv_deals, target.serv_target_rev, target.serv_target_gp),
+        'service_100': calc_100_stats(serv_deals, target.serv_target_rev, target.serv_target_gp),
+        'targets': {
+            'total_rev': target.target_revenue,
+            'total_gp': target.target_gp,
+            'comm_rev': target.comm_target_rev,
+            'comm_gp': target.comm_target_gp,
+            'serv_rev': target.serv_target_rev,
+            'serv_gp': target.serv_target_gp
         }
     })
 
 @app.route('/api/target-setting', methods=['POST'])
 @login_required
-def update_target():
+def save_targets():
     data = request.json
     target = TargetSetting.query.first()
     if not target:
         target = TargetSetting()
         db.session.add(target)
+        
+    target.target_revenue = data.get('target_revenue', 0)
+    target.target_gp = data.get('target_gp', 0)
+    target.comm_target_rev = data.get('comm_target_rev', 0)
+    target.comm_target_gp = data.get('comm_target_gp', 0)
+    target.serv_target_rev = data.get('serv_target_rev', 0)
+    target.serv_target_gp = data.get('serv_target_gp', 0)
     
-    target.target_revenue = float(data.get('target_revenue', 100000))
-    target.target_gp = float(data.get('target_gp', 20000))
     db.session.commit()
     return jsonify({'status': 'success'})
 

@@ -1,30 +1,84 @@
 let selectedDealId = null;
 let currentTeam = ""; 
+let teamGaugeCharts = {};
 
-// --- [추가] 3자리 쉼표 포맷팅 유틸리티 함수 ---
 function formatNumberInput(input) {
     let value = input.value.replace(/[^0-9]/g, '');
-    if (value) {
-        input.value = Number(value).toLocaleString('ko-KR');
-    } else {
-        input.value = '';
-    }
+    input.value = value ? Number(value).toLocaleString('ko-KR') : '';
 }
 
 function parseFormattedNumber(value) {
     if (!value) return 0;
     return parseFloat(value.toString().replace(/,/g, '')) || 0;
 }
-// ----------------------------------------------
 
 function initTeamPage(teamName) {
     currentTeam = teamName;
     loadDeals();
+    loadTeamGauges();
+}
+
+function createTeamGauge(canvasId, percentage) {
+    const el = document.getElementById(canvasId);
+    if (!el) return;
+    const ctx = el.getContext('2d');
+    if (teamGaugeCharts[canvasId]) teamGaugeCharts[canvasId].destroy();
+
+    teamGaugeCharts[canvasId] = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [percentage, Math.max(0, 100 - percentage)],
+                backgroundColor: [
+                    percentage >= 80 ? '#10b981' : percentage >= 50 ? '#f59e0b' : '#ef4444',
+                    '#334155'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            rotation: -90,
+            circumference: 180,
+            cutout: '75%',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { tooltip: { enabled: false }, legend: { display: false } }
+        }
+    });
+}
+
+function loadTeamGauges() {
+    fetch('/api/dashboard-data')
+        .then(res => res.json())
+        .then(data => {
+            let tData, t100Data;
+            if (currentTeam === '커머셜팀') {
+                tData = data.commercial;
+                t100Data = data.commercial_100;
+            } else if (currentTeam === '서비스영업팀') {
+                tData = data.service;
+                t100Data = data.service_100;
+            } else {
+                tData = data.total;
+                t100Data = data.total_100;
+            }
+
+            createTeamGauge('team-gauge-rev', tData.rev_pct);
+            document.getElementById('team-rev-pct-text').innerText = `${tData.rev_pct}%`;
+
+            createTeamGauge('team-gauge-gp', tData.gp_pct);
+            document.getElementById('team-gp-pct-text').innerText = `${tData.gp_pct}%`;
+
+            createTeamGauge('team-gauge-rev-100', t100Data.rev_pct);
+            document.getElementById('team-rev-100-pct-text').innerText = `${t100Data.rev_pct}%`;
+
+            createTeamGauge('team-gauge-gp-100', t100Data.gp_pct);
+            document.getElementById('team-gp-100-pct-text').innerText = `${t100Data.gp_pct}%`;
+        });
 }
 
 function loadDeals() {
     const url = currentTeam ? `/api/deals?team=${encodeURIComponent(currentTeam)}` : '/api/deals';
-    
     fetch(url)
         .then(res => res.json())
         .then(data => {
@@ -61,7 +115,6 @@ function selectRow(tr, deal) {
     tr.classList.add('selected');
     selectedDealId = deal.id;
     
-    // 모달에 정보 세팅 (숫자를 천단위 쉼표 포맷으로 변환하여 표시)
     document.getElementById('deal-id').value = deal.id;
     document.getElementById('deal-title').value = deal.title;
     document.getElementById('deal-prob').value = deal.probability;
@@ -121,8 +174,6 @@ function closeDealModal() {
 
 function saveDeal() {
     const id = document.getElementById('deal-id').value;
-    
-    // 쉼표 제거 후 숫자값 추출
     const revValue = parseFormattedNumber(document.getElementById('deal-rev').value);
     const gpValue = parseFormattedNumber(document.getElementById('deal-gp').value);
 
@@ -149,6 +200,7 @@ function saveDeal() {
     .then(() => {
         closeDealModal();
         loadDeals();
+        loadTeamGauges();
     });
 }
 
@@ -163,6 +215,7 @@ function deleteDeal() {
             .then(() => {
                 selectedDealId = null;
                 loadDeals();
+                loadTeamGauges();
             });
     }
 }

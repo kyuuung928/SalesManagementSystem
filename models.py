@@ -24,7 +24,12 @@ class Deal(db.Model):
     memo = db.Column(db.Text, nullable=True)               # 메모
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+# models.py 또는 app.py 내 TargetSetting 모델 부분
 class TargetSetting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    target_revenue = db.Column(db.Float, default=100000.0) # 목표 매출 (기본값)
-    target_gp = db.Column(db.Float, default=20000.0)       # 목표 GP (기본값)
+    target_revenue = db.Column(db.Float, default=0.0)
+    target_gp = db.Column(db.Float, default=0.0)
+    comm_target_rev = db.Column(db.Float, default=0.0)
+    comm_target_gp = db.Column(db.Float, default=0.0)
+    serv_target_rev = db.Column(db.Float, default=0.0)
+    serv_target_gp = db.Column(db.Float, default=0.0)
