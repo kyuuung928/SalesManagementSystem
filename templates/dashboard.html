@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="top-header">
-    <div class="page-title">서비스영업본부 실적 대시보드</div>
+    <div class="page-title">서비스영업본부 대시보드</div>
     <div class="gear-icon" onclick="openSettingsModal()" style="cursor: pointer; font-size: 1.5rem;">⚙️</div>
 </div>
 
 <!-- 본부 전체 달성률 -->
-<h3 style="margin-top: 15px; color: #94a3b8;">[서비스영업본부 전체 달성률]</h3>
+<h3 style="margin-top: 15px; color: #94a3b8;">[서비스영업본부 목표 달성률]</h3>
 <div class="gauge-section" style="display: flex; gap: 20px; margin-bottom: 25px;">
     <div class="gauge-group" style="flex: 1; background: #1e293b; padding: 15px; border-radius: 8px;">
-        <h4 style="text-align: center;">전체 실적 달성률</h4>
+        <h4 style="text-align: center;">예상 실적 달성률</h4>
         <div class="gauge-container" style="display: flex; justify-content: space-around;">
             <div class="gauge-box" style="text-align: center;">
                 <div style="height: 110px; width: 140px;"><canvas id="gauge-rev"></canvas></div>
@@ -24,16 +24,16 @@
         </div>
     </div>
     <div class="gauge-group" style="flex: 1; background: #1e293b; padding: 15px; border-radius: 8px;">
-        <h4 style="text-align: center;">확정(수주 100%) 달성률</h4>
+        <h4 style="text-align: center;">확정 실적 달성률</h4>
         <div class="gauge-container" style="display: flex; justify-content: space-around;">
             <div class="gauge-box" style="text-align: center;">
                 <div style="height: 110px; width: 140px;"><canvas id="gauge-rev-100"></canvas></div>
-                <div style="font-size:0.85rem; color:#94a3b8;">(100%) 목표대비 매출</div>
+                <div style="font-size:0.85rem; color:#94a3b8;">목표대비 매출</div>
                 <div id="rev-100-pct-text" style="font-size:1.1rem; font-weight:bold; color:#38bdf8;">0%</div>
             </div>
             <div class="gauge-box" style="text-align: center;">
                 <div style="height: 110px; width: 140px;"><canvas id="gauge-gp-100"></canvas></div>
-                <div style="font-size:0.85rem; color:#94a3b8;">(100%) 목표대비 GP</div>
+                <div style="font-size:0.85rem; color:#94a3b8;">목표대비 GP</div>
                 <div id="gp-100-pct-text" style="font-size:1.1rem; font-weight:bold; color:#38bdf8;">0%</div>
             </div>
         </div>
@@ -41,10 +41,10 @@
 </div>
 
 <!-- 커머셜팀 달성률 -->
-<h3 style="color: #94a3b8;">[커머셜팀 달성률]</h3>
+<h3 style="color: #94a3b8;">[커머셜팀 목표 달성률]</h3>
 <div class="gauge-section" style="display: flex; gap: 20px; margin-bottom: 25px;">
     <div class="gauge-group" style="flex: 1; background: #1e293b; padding: 15px; border-radius: 8px;">
-        <h4 style="text-align: center;">전체 실적</h4>
+        <h4 style="text-align: center;">예상 실적 달성률</h4>
         <div class="gauge-container" style="display: flex; justify-content: space-around;">
             <div class="gauge-box" style="text-align: center;">
                 <div style="height: 110px; width: 140px;"><canvas id="comm-gauge-rev"></canvas></div>
@@ -59,16 +59,16 @@
         </div>
     </div>
     <div class="gauge-group" style="flex: 1; background: #1e293b; padding: 15px; border-radius: 8px;">
-        <h4 style="text-align: center;">확정(100%) 실적</h4>
+        <h4 style="text-align: center;">확정 실적 달성률</h4>
         <div class="gauge-container" style="display: flex; justify-content: space-around;">
             <div class="gauge-box" style="text-align: center;">
                 <div style="height: 110px; width: 140px;"><canvas id="comm-gauge-rev-100"></canvas></div>
-                <div style="font-size:0.85rem; color:#94a3b8;">(100%) 목표대비 매출</div>
+                <div style="font-size:0.85rem; color:#94a3b8;">목표대비 매출</div>
                 <div id="comm-rev-100-pct-text" style="font-size:1.1rem; font-weight:bold; color:#38bdf8;">0%</div>
             </div>
             <div class="gauge-box" style="text-align: center;">
                 <div style="height: 110px; width: 140px;"><canvas id="comm-gauge-gp-100"></canvas></div>
-                <div style="font-size:0.85rem; color:#94a3b8;">(100%) 목표대비 GP</div>
+                <div style="font-size:0.85rem; color:#94a3b8;">목표대비 GP</div>
                 <div id="comm-gp-100-pct-text" style="font-size:1.1rem; font-weight:bold; color:#38bdf8;">0%</div>
             </div>
         </div>
@@ -76,10 +76,10 @@
 </div>
 
 <!-- 서비스영업팀 달성률 -->
-<h3 style="color: #94a3b8;">[서비스영업팀 달성률]</h3>
+<h3 style="color: #94a3b8;">[서비스영업팀 목표 달성률]</h3>
 <div class="gauge-section" style="display: flex; gap: 20px; margin-bottom: 25px;">
     <div class="gauge-group" style="flex: 1; background: #1e293b; padding: 15px; border-radius: 8px;">
-        <h4 style="text-align: center;">전체 실적</h4>
+        <h4 style="text-align: center;">예상 실적 달성률</h4>
         <div class="gauge-container" style="display: flex; justify-content: space-around;">
             <div class="gauge-box" style="text-align: center;">
                 <div style="height: 110px; width: 140px;"><canvas id="serv-gauge-rev"></canvas></div>
@@ -94,16 +94,16 @@
         </div>
     </div>
     <div class="gauge-group" style="flex: 1; background: #1e293b; padding: 15px; border-radius: 8px;">
-        <h4 style="text-align: center;">확정(100%) 실적</h4>
+        <h4 style="text-align: center;">확정 실적 달성률</h4>
         <div class="gauge-container" style="display: flex; justify-content: space-around;">
             <div class="gauge-box" style="text-align: center;">
                 <div style="height: 110px; width: 140px;"><canvas id="serv-gauge-rev-100"></canvas></div>
-                <div style="font-size:0.85rem; color:#94a3b8;">(100%) 목표대비 매출</div>
+                <div style="font-size:0.85rem; color:#94a3b8;">목표대비 매출</div>
                 <div id="serv-rev-100-pct-text" style="font-size:1.1rem; font-weight:bold; color:#38bdf8;">0%</div>
             </div>
             <div class="gauge-box" style="text-align: center;">
                 <div style="height: 110px; width: 140px;"><canvas id="serv-gauge-gp-100"></canvas></div>
-                <div style="font-size:0.85rem; color:#94a3b8;">(100%) 목표대비 GP</div>
+                <div style="font-size:0.85rem; color:#94a3b8;">목표대비 GP</div>
                 <div id="serv-gp-100-pct-text" style="font-size:1.1rem; font-weight:bold; color:#38bdf8;">0%</div>
             </div>
         </div>
@@ -156,7 +156,7 @@
 <div id="settings-modal" class="modal">
     <div class="modal-content" style="max-height: 90vh; overflow-y: auto;">
         <h3>목표치 설정</h3>
-        <h4 style="color: #38bdf8; margin-top: 15px;">[서비스영업본부 전체]</h4>
+        <h4 style="color: #38bdf8; margin-top: 15px;">[서비스영업본부]</h4>
         <div class="form-group">
             <label>목표 매출</label>
             <input type="text" id="target-rev-input" oninput="formatNumberInput(this)">
