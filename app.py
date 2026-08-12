@@ -41,6 +41,12 @@ def index():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    # 이미 로그인된 상태라면 대시보드로 바로 이동
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    if request.method == 'POST':
+        username = request.form.get('username')
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -70,6 +76,12 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # 이미 로그인된 상태라면 대시보드로 바로 이동
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    if request.method == 'POST':
+        username = request.form.get('username')
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')

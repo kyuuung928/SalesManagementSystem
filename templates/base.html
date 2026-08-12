@@ -7,7 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    {% if current_user.is_authenticated %}
+    <!-- 로그인 상태이면서, 로그인/회원가입 페이지가 아닐 때만 사이드바 출력 -->
+    {% if current_user.is_authenticated and request.path not in ['/login', '/signup'] %}
     <div id="sidebar">
         <div class="sidebar-header">
             <div class="logo-container">
@@ -40,7 +41,7 @@
     </div>
     {% endif %}
 
-    <div id="main-content" style="{% if not current_user.is_authenticated %}margin-left: 0;{% endif %}">
+    <div id="main-content" style="{% if not current_user.is_authenticated or request.path in ['/login', '/signup'] %}margin-left: 0;{% endif %}">
         {% block content %}{% endblock %}
     </div>
 
@@ -48,8 +49,12 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
+            if (sidebar) {
+                sidebar.classList.toggle('collapsed');
+            }
+            if (mainContent) {
+                mainContent.classList.toggle('expanded');
+            }
         }
     </script>
 </body>
