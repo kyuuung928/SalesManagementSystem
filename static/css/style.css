@@ -391,3 +391,19 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
+
+.btn-excel {
+    display: inline-block;
+    background-color: #1D6F42; /* 엑셀 시그니처 초록색 */
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btn-excel:hover {
+    background-color: #155231;
+}

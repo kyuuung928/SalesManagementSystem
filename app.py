@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
 from models import db, User, Deal, TargetSetting
 import os
+import io
+import openpyxl
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -120,6 +122,53 @@ def service():
 @login_required
 def headquarters():
     return render_template('headquarters.html')
+
+@app.route('/export/excel')
+@login_required
+def export_excel():
+    team = request.args.get('team')  # 파라미터로 전달된 팀명 확인
+    
+    query = Deal.query
+    if team:
+        query = query.filter_by(team=team)
+    deals = query.order_by(Deal.id.desc()).all()
+
+    # 엑셀 워크북 생성
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = team if team else "전체_영업현황"
+
+    # 헤더 작성
+    headers = ['ID', '팀명', '딜 제목', '성공확률(%)', '매출액(천원)', 'GP(천원)', '담당자', '수주예정월', '메모']
+    ws.append(headers)
+
+    # 데이터 작성
+    for d in deals:
+        ws.append([
+            d.id,
+            d.team,
+            d.title,
+            d.probability,
+            d.revenue,
+            d.gp,
+            d.sales_rep,
+            d.closing_month,
+            d.memo
+        ])
+
+    # 메모리 버퍼에 저장
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    filename = f"{team if team else '전체'}_영업현황.xlsx"
+
+    return send_file(
+        output,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name=filename
+    )
 
 # --- API Endpoints ---
 

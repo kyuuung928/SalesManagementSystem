@@ -5,6 +5,10 @@
     <div class="gear-icon" onclick="openSettingsModal()" style="cursor: pointer; font-size: 1.5rem;">⚙️</div>
 </div>
 
+<a href="{{ url_for('export_excel') }}" class="btn btn-excel">
+    📥 전체 엑셀 다운로드
+</a>
+
 <!-- 본부 전체 달성률 -->
 <h3 style="margin-top: 15px; color: #94a3b8;">[서비스영업본부 목표 달성률]</h3>
 <div class="gauge-section" style="display: flex; gap: 20px; margin-bottom: 25px;">
